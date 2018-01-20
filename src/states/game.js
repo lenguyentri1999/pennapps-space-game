@@ -16,6 +16,7 @@ class Game extends Phaser.State {
 
     preload(){
         this.game.load.image('ship', 'assets/sprites/spaceship.png');
+        this.game.load.image('star', 'assets/sprites/star_2.png');
     }
 
     create() {
@@ -75,7 +76,7 @@ class Game extends Phaser.State {
     makeFood() {
         const x = this.game.rnd.integerInRange(0, this.game.width);
         const y = this.game.rnd.integerInRange(0, this.game.height);
-        const food = this.game.add.sprite(x, y, 'ship');
+        const food = this.game.add.sprite(x, y, 'star');
         food.scale.setTo(0.06125, 0.06125);
     }
 
