@@ -15,16 +15,16 @@ class Game extends Phaser.State {
         });
     }
 
-    //--------------- LOAD IMAGE OF SHIP AND BACKGROUND -------------
+    //--------------- LOAD IMAGE OF SHIP  -------------
     preload(){
         this.game.load.image('ship', 'assets/sprites/spaceship.png');
-        this.game.load.image('bg', 'assets/background.jpg');
         this.playerName = localStorage.getItem("playerName");
         this.obj ={
           playerName: this.playerName
         }
         console.log(this.playerName);
 
+        //------------------------ LOAD IMAGE OF STAR ---------- 
         this.game.load.image('star', 'assets/sprites/star_2.png');
         this.foodArray = [];
     }
@@ -107,7 +107,8 @@ class Game extends Phaser.State {
             })
         });
 
-        console.log(this.foodArray);
+
+        //------------- WHEN PLAYER HITS A STAR -----------------
         if (this.foodArray.length > 0){
           for (var i = 0; i < this.foodArray.length; i++){
             var boundsA = this.player.getBounds();
@@ -120,8 +121,12 @@ class Game extends Phaser.State {
           }
         }
 
+        firebase.database().ref().update()
+
     }
 
+
+    //--------------- THIS FUNCTION IS CALLED WHEN GAME OVER --------------------
     endGame() {
         this.game.state.start('gameover');
     }
@@ -138,7 +143,6 @@ class Game extends Phaser.State {
     makeFood() {
         const x = this.game.rnd.integerInRange(0, this.game.width);
         const y = this.game.rnd.integerInRange(0, this.game.height);
-        // this.food = this.foods.create(x,y,'star');
         const food = this.game.add.sprite(x, y, 'star');
         food.scale.setTo(0.06125, 0.06125);
         this.foodArray.push(food);
