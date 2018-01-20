@@ -15,17 +15,23 @@ class Game extends Phaser.State {
         });
     }
 
-    //--------------- LOAD IMAGE OF SHIP --------
+    //--------------- LOAD IMAGE OF SHIP AND BACKGROUND -------------
     preload(){
         this.game.load.image('ship', 'assets/sprites/spaceship.png');
-        this.game.load.image('bg', 'assets/background.jpg')
+        this.game.load.image('bg', 'assets/background.jpg');
+        this.playerName = localStorage.getItem("playerName");
+        this.obj ={
+          playerName: this.playerName
+        }
+        console.log(this.playerName);
     }
 
     create() {
 
+      //----------- ADDING A FIELD OF STARS AS THE BACKGROUND ----------------
       this.starfield = this.game.add.tileSprite(0, 0, 1000, 800, 'background');
 
-      //---------- STORE A LIST OF PEOPLE AS PLAYERS ------------
+      //---------------- STORE A LIST OF PEOPLE AS PLAYERS ------------
         this.players = {};
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         this.player = this.game.add.sprite(200, 200, 'ship');
@@ -54,14 +60,20 @@ class Game extends Phaser.State {
         })
 
         this.game.time.events.loop(Phaser.Timer.SECOND, this.makeFood, this);
+        firebase.database().ref('players').child(this.player.key).set(this.obj);
     }
 
     update() {
+
+      //-------- MOVE THE BACKGROUND AS THE PLAYER MOVES ---------
         this.starfield.tilePosition.y += 2;
         this.starfield.tilePosition.x += 2;
+
+        //------------------------- MOVE THE PLAYER SPACESHIP AS THE PLAYER POINTER MOVES ----------
         this.game.physics.arcade.moveToPointer(this.player, 60, this.game.input.activePointer, 500);
-        // console.log(this.player.position);
-        firebase.database().ref('players').child(this.player.key).set(this.player.position)
+        firebase.database().ref('players').child(this.player.key).update(this.player.position);
+
+
         firebase.database().ref('players').once('value', (snap) => {
             snap.forEach(child => {
                 if(child.key !== this.player.key) {
