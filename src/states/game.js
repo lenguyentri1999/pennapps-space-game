@@ -44,6 +44,7 @@ class Game extends Phaser.State {
             localStorage.setItem('gmoon_key', this.player.key);
         }
 
+        //------------- ENABLE THINGS THAT MOVE WITH POINTER ---------
         this.game.physics.enable(this.player, Phaser.Physics.ARCADE);
 
         //-------------- STORE PLAYER'S ID AS KEY AND POSITION AS VALUE ------------
@@ -60,6 +61,8 @@ class Game extends Phaser.State {
         })
 
         this.game.time.events.loop(Phaser.Timer.SECOND, this.makeFood, this);
+
+        //--------------- ADD PLAYER'S NAME TO THE DATABASE -----------------
         firebase.database().ref('players').child(this.player.key).set(this.obj);
     }
 
@@ -69,9 +72,15 @@ class Game extends Phaser.State {
         this.starfield.tilePosition.y += 2;
         this.starfield.tilePosition.x += 2;
 
-        //------------------------- MOVE THE PLAYER SPACESHIP AS THE PLAYER POINTER MOVES ----------
+        //------------------ MOVE THE PLAYER SPACESHIP AS THE PLAYER POINTER MOVES ----------
         this.game.physics.arcade.moveToPointer(this.player, 60, this.game.input.activePointer, 500);
         firebase.database().ref('players').child(this.player.key).update(this.player.position);
+        this.name = this.game.add.text(this.player.position.x, this.player.position.y, this.playerName.toUpperCase(), {
+            font: '32px Arial', fill: '#ffffff', align: 'center'
+        });
+        // this.game.time.events.add(Phaser.Timer.SECOND * 1, this.name.destroy(), this);
+        // this.game.time.events.add(Phaser.Timer.SECOND * 1, this.name.destroy(), this);
+        // this.name.destroy();
 
 
         firebase.database().ref('players').once('value', (snap) => {
