@@ -4,7 +4,9 @@ class Boot extends Phaser.State {
     super();
   }
 
+  //----------- THE LOADING BAR AND BACKGROUND -----------
   preload() {
+    this.load.image('background', 'assets/background.jpg');
     this.load.image('preloader', 'assets/preloader.gif');
   }
 
