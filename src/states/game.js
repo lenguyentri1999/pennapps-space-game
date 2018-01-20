@@ -66,6 +66,17 @@ class Game extends Phaser.State {
 
         //--------------- ADD PLAYER'S NAME TO THE DATABASE -----------------
         firebase.database().ref('players').child(this.player.key).set(this.obj);
+
+        //=============== ADD THE TEXT ======================
+        var style = {
+          font: "32px Arial",
+          fill: "#ff0044",
+          wordWrap: true,
+          wordWrapWidth: this.player.width,
+          align: "center"
+        };
+        this.name = this.game.add.text(0,0, this.playerName.toUpperCase(),style);
+        this.name.anchor.set(0.5);
     }
 
     update() {
@@ -77,12 +88,11 @@ class Game extends Phaser.State {
         //------------------ MOVE THE PLAYER SPACESHIP AS THE PLAYER POINTER MOVES ----------
         this.game.physics.arcade.moveToPointer(this.player, 60, this.game.input.activePointer, 500);
         firebase.database().ref('players').child(this.player.key).update(this.player.position);
-        this.name = this.game.add.text(this.player.position.x, this.player.position.y, this.playerName.toUpperCase(), {
-            font: '32px Arial', fill: '#ffffff', align: 'center'
-        });
-        // this.game.time.events.add(Phaser.Timer.SECOND * 1, this.name.destroy(), this);
-        // this.game.time.events.add(Phaser.Timer.SECOND * 1, this.name.destroy(), this);
-        // this.name.destroy();
+
+
+        //-----------CHANGE TEXT TO FOLLOW SPRTIE
+        this.name.x = Math.floor(this.player.x+this.name.width);
+        this.name.y = Math.floor(this.player.y);
 
 
         firebase.database().ref('players').once('value', (snap) => {
@@ -92,6 +102,8 @@ class Game extends Phaser.State {
                 }
             })
         });
+
+
     }
 
     endGame() {
