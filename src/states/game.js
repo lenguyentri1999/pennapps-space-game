@@ -38,7 +38,7 @@ class Game extends Phaser.State {
         this.players = {};
         this.game.physics.startSystem(Phaser.Physics.ARCADE);
         this.player = this.game.add.sprite(200, 200, 'ship');
-        this.player.scale.setTo(0.25, 0.25);
+        this.player.scale.setTo(0.5, 0.5);
         const storedKey = localStorage.getItem('gmoon_key');
         if(storedKey !== 'null' && storedKey !== null) {
             this.player.key = storedKey;
@@ -66,7 +66,7 @@ class Game extends Phaser.State {
 
                 p.playerName = child.val().playerName;
                 this.playerTexts[child.key] = this.game.add.text(0,0, child.val().playerName.toUpperCase(),otherStyle);
-                p.scale.setTo(0.25, 0.25);
+                p.scale.setTo(0.5, 0.5);
                 this.players[child.key] = p;
             }
         });
@@ -82,8 +82,8 @@ class Game extends Phaser.State {
 
         //=============== ADD THE TEXT ======================
         var style = {
-          font: "32px Arial",
-          fill: "#ff0044",
+          font: "20px Arial",
+          fill: "#FFFFFF",
           wordWrap: true,
           wordWrapWidth: this.player.width,
           align: "center"
@@ -151,6 +151,11 @@ class Game extends Phaser.State {
         }
 
 
+        //---------- UPLOAD THE SCORE GENERATOR TO THE ------------------
+
+
+
+
 
     }
 
@@ -173,7 +178,7 @@ class Game extends Phaser.State {
         const x = this.game.rnd.integerInRange(0, this.game.width);
         const y = this.game.rnd.integerInRange(0, this.game.height);
         const food = this.game.add.sprite(x, y, 'star');
-        food.scale.setTo(0.06125, 0.06125);
+        food.scale.setTo(0.015, 0.015);
         this.foodArray.push(food);
     }
 
