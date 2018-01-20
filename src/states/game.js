@@ -49,10 +49,22 @@ class Game extends Phaser.State {
         //------------- ENABLE THINGS THAT MOVE WITH POINTER ---------
         this.game.physics.enable(this.player, Phaser.Physics.ARCADE);
 
+
         //-------------- STORE PLAYER'S ID AS KEY AND POSITION AS VALUE ------------
+        this.playerTexts = {}
+        var otherStyle = {
+          font: "32px Arial",
+          fill: "#FFFFFF",
+          wordWrap: true,
+          wordWrapWidth: this.player.width,
+          align: "center"
+        };
         firebase.database().ref('players').on('child_added', child => {
             if(child.key !== this.player.key) {
                 const p = this.game.add.sprite(child.val().x, child.val().y, 'ship');
+
+                p.playerName = child.val().playerName;
+                this.playerTexts[child.key] = this.game.add.text(0,0, child.val().playerName.toUpperCase(),otherStyle);
                 p.scale.setTo(0.25, 0.25);
                 this.players[child.key] = p;
             }
@@ -76,7 +88,14 @@ class Game extends Phaser.State {
           align: "center"
         };
         this.name = this.game.add.text(0,0, this.playerName.toUpperCase(),style);
-        this.name.anchor.set(0.5);
+        // this.name.anchor.set(0.5);
+        console.log(this.playerTexts);
+
+
+
+
+
+
     }
 
     update() {
@@ -90,18 +109,31 @@ class Game extends Phaser.State {
         firebase.database().ref('players').child(this.player.key).update(this.player.position);
 
 
-        //-----------CHANGE TEXT TO FOLLOW SPRTIE
+        //-----------CHANGE TEXT TO FOLLOW SPRITE
+        //FOR THE USER
         this.name.x = Math.floor(this.player.x+this.name.width);
         this.name.y = Math.floor(this.player.y);
+        //FOR THE OTHER PLAYERS
+        for (var id in this.playerTexts){
+          var otherText = this.playerTexts[id];
+          otherText.x = Math.floor()
+        }
+
 
 
         firebase.database().ref('players').once('value', (snap) => {
             snap.forEach(child => {
                 if(child.key !== this.player.key) {
                     this.players[child.key].position.set(child.val().x, child.val().y);
+                    //Update text to follow players
+                    this.playerTexts[child.key].x = child.val().x+this.name.width;
+                    this.playerTexts[child.key].y = child.val().y;
+
                 }
             })
         });
+
+
 
 
     }
