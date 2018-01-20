@@ -63,11 +63,11 @@ class Game extends Phaser.State {
         firebase.database().ref('players').on('child_added', child => {
             if(child.key !== this.player.key) {
                 const p = this.game.add.sprite(child.val().x, child.val().y, 'ship');
-
                 p.playerName = child.val().playerName;
                 this.playerTexts[child.key] = this.game.add.text(0,0, child.val().playerName.toUpperCase(),otherStyle);
                 p.scale.setTo(0.5, 0.5);
                 this.players[child.key] = p;
+
             }
         });
         firebase.database().ref('players').child(this.player.key).onDisconnect().set(null);
@@ -92,11 +92,6 @@ class Game extends Phaser.State {
         // this.name.anchor.set(0.5);
         console.log(this.playerTexts);
 
-
-
-
-
-
     }
 
     update() {
@@ -109,13 +104,12 @@ class Game extends Phaser.State {
         this.game.physics.arcade.moveToPointer(this.player, 60, this.game.input.activePointer, 500);
         firebase.database().ref('players').child(this.player.key).update(this.player.position);
 
-        // this.physics.arcade.collide(this.player,this.land);
 
-        //-----------CHANGE TEXT TO FOLLOW SPRITE
-        //FOR THE USER
+        //-----------CHANGE TEXT TO FOLLOW SPRITE FOR THE USER ----------
         this.name.x = Math.floor(this.player.x+this.name.width);
         this.name.y = Math.floor(this.player.y);
-        //FOR THE OTHER PLAYERS
+
+        //-----------CHANGE TEXT TO FOLLOW SPRITE FOR OTHER USERS ----------
         for (var id in this.playerTexts){
           var otherText = this.playerTexts[id];
           otherText.x = Math.floor()
@@ -143,19 +137,22 @@ class Game extends Phaser.State {
             var boundsA = this.player.getBounds();
             var boundsB = this.foodArray[i].getBounds();
             var collisionDetection = Phaser.Rectangle.intersects(boundsA, boundsB);
-            console.log(collisionDetection)
+            // console.log(collisionDetection)
             if (collisionDetection == true){
-              this.foodArray[i].kill();
+               this.foodArray[i].kill();
             }
           }
         }
 
 
-        //---------- UPLOAD THE SCORE GENERATOR TO THE ------------------
-
-
-
-
+        //------------ CHECK COLLISION DETECTION OF OTHER PLAYERS ------
+        for (var otherPlayer in this.players){
+          var otherSprite = this.players[otherPlayer];
+          var boundsC = this.player.getBounds();
+          var boundsD = otherSprite.getBounds();
+          var eatOtherPeople = Phaser.Rectangle.intersects(boundsC, boundsD);
+          console.log(eatOtherPeople);
+        }
 
     }
 
