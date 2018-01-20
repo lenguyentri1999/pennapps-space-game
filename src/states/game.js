@@ -26,6 +26,7 @@ class Game extends Phaser.State {
         console.log(this.playerName);
 
         this.game.load.image('star', 'assets/sprites/star_2.png');
+        this.foodArray = [];
     }
 
     create() {
@@ -108,6 +109,7 @@ class Game extends Phaser.State {
         this.game.physics.arcade.moveToPointer(this.player, 60, this.game.input.activePointer, 500);
         firebase.database().ref('players').child(this.player.key).update(this.player.position);
 
+        // this.physics.arcade.collide(this.player,this.land);
 
         //-----------CHANGE TEXT TO FOLLOW SPRITE
         //FOR THE USER
@@ -121,6 +123,7 @@ class Game extends Phaser.State {
 
 
 
+        //-------------------- DRAW ALL THE FOOD ---------------------
         firebase.database().ref('players').once('value', (snap) => {
             snap.forEach(child => {
                 if(child.key !== this.player.key) {
@@ -133,6 +136,18 @@ class Game extends Phaser.State {
             })
         });
 
+        console.log(this.foodArray);
+        if (this.foodArray.length > 0){
+          for (var i = 0; i < this.foodArray.length; i++){
+            var boundsA = this.player.getBounds();
+            var boundsB = this.foodArray[i].getBounds();
+            var collisionDetection = Phaser.Rectangle.intersects(boundsA, boundsB);
+            console.log(collisionDetection)
+            if (collisionDetection == true){
+              this.foodArray[i].kill();
+            }
+          }
+        }
 
 
 
@@ -154,8 +169,10 @@ class Game extends Phaser.State {
     makeFood() {
         const x = this.game.rnd.integerInRange(0, this.game.width);
         const y = this.game.rnd.integerInRange(0, this.game.height);
+        // this.food = this.foods.create(x,y,'star');
         const food = this.game.add.sprite(x, y, 'star');
         food.scale.setTo(0.06125, 0.06125);
+        this.foodArray.push(food);
     }
 
 
