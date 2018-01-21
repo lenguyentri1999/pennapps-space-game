@@ -158,13 +158,25 @@ class Game extends Phaser.State {
 
         //------------ CHECK COLLISION DETECTION OF OTHER PLAYERS ------
         for (var otherPlayer in this.players){
-          var otherSprite = this.players[otherPlayer];
-          var boundsC = this.player.getBounds();
-          var boundsD = otherSprite.getBounds();
-          var eatOtherPeople = Phaser.Rectangle.intersects(boundsC, boundsD);
-          if (eatOtherPeople == true){
-            firebase.database().ref('players').child(otherPlayer).update({status:"dead"});
+          try{
+            var otherSprite = this.players[otherPlayer];
+            console.log("other spriteeeeee", otherSprite);
+              var boundsC = this.player.getBounds();
+              var boundsD = otherSprite.getBounds();
+              var eatOtherPeople = Phaser.Rectangle.intersects(boundsC, boundsD);
+              if (eatOtherPeople == true){
+                firebase.database().ref('players').child(otherPlayer).update({status:"dead"});
+              }
           }
+
+          catch(e){
+            console.error(e);
+          }
+
+
+
+
+
         }
 
     }
