@@ -28,6 +28,7 @@ class Game extends Phaser.State {
         //------------------------ LOAD IMAGE OF STAR ----------
         this.game.load.image('star', 'assets/sprites/star_2.png');
         this.foodArray = {};
+        this.count = 0
     }
 
     create() {
@@ -142,6 +143,9 @@ class Game extends Phaser.State {
             var collisionDetection = Phaser.Rectangle.intersects(boundsA, boundsB);
             console.log(collisionDetection)
             if (collisionDetection == true){
+                //Make spaceship grows bigger
+                this.count++;
+                this.player.scale.setTo(0.5+0.01*this.count, 0.5+0.01*this.count);
                 this.foodArray[starKey].kill();
                 firebase.database().ref("stars").child(starKey).remove();
                 delete this.foodArray[starKey];
