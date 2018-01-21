@@ -124,6 +124,7 @@ class Game extends Phaser.State {
             snap.forEach(child => {
                 if(child.key !== this.player.key) {
                     this.players[child.key].position.set(child.val().x, child.val().y);
+                    this.players[child.key].scale.setTo(child.val().currentScale, child.val().currentScale);
                     //Update text to follow players
                     this.playerTexts[child.key].x = child.val().x+this.name.width;
                     this.playerTexts[child.key].y = child.val().y;
@@ -145,7 +146,11 @@ class Game extends Phaser.State {
             if (collisionDetection == true){
                 //Make spaceship grows bigger
                 this.count++;
-                this.player.scale.setTo(0.5+0.01*this.count, 0.5+0.01*this.count);
+                this.player.currentScale = 0.05+0.01*this.count;
+                this.player.scale.setTo(this.player.currentScale, this.player.currentScale);
+                firebase.database().ref('players').child(this.player.key).update({
+                  currentScale: this.player.currentScale
+                })
                 this.foodArray[starKey].kill();
                 firebase.database().ref("stars").child(starKey).remove();
                 delete this.foodArray[starKey];
