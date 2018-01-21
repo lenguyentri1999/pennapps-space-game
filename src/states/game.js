@@ -153,7 +153,7 @@ class Game extends Phaser.State {
           var boundsD = otherSprite.getBounds();
           var eatOtherPeople = Phaser.Rectangle.intersects(boundsC, boundsD);
           if (eatOtherPeople == true){
-            firebase.database().ref('players').child(otherPlayer).update({status:"dead"}); 
+            firebase.database().ref('players').child(otherPlayer).update({status:"dead"});
           }
         }
 
@@ -178,8 +178,18 @@ class Game extends Phaser.State {
         const x = this.game.rnd.integerInRange(0, this.game.width);
         const y = this.game.rnd.integerInRange(0, this.game.height);
         const food = this.game.add.sprite(x, y, 'star');
+        const foodKey = this.uuidv4();
         food.scale.setTo(0.015, 0.015);
-        this.foodArray.push(food);
+        // this.foodArray.push(food);
+
+        //---------- CREATE A FOOD OBJECT --------
+        var foodObj = {};
+        foodObj[foodKey] = food;
+        console.log(foodObj);
+        this.foodArray.push(foodObj);
+
+        //---------------------- PUSH THE FOOD OBJECT TO FIREBASE -------------- 
+        firebase.database().ref("stars").child(foodKey).set({status:"not eaten"});
     }
 
 
