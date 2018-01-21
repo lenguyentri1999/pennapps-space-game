@@ -21,7 +21,8 @@ class Game extends Phaser.State {
         this.playerName = localStorage.getItem("playerName");
         this.obj ={
           playerName: this.playerName,
-          status: "alive"
+          status: "alive",
+          currentScale: 0.5
         }
         console.log(this.playerName);
 
@@ -67,7 +68,7 @@ class Game extends Phaser.State {
                 const p = this.game.add.sprite(child.val().x, child.val().y, 'ship');
                 p.playerName = child.val().playerName;
                 this.playerTexts[child.key] = this.game.add.text(0,0, child.val().playerName.toUpperCase(),otherStyle);
-                p.scale.setTo(0.5, 0.5);
+                p.scale.setTo(child.val().currentScale || 0.5, child.val().currentScale || 0.5);
                 this.players[child.key] = p;
 
             }
@@ -79,7 +80,7 @@ class Game extends Phaser.State {
 
         this.game.time.events.loop(Phaser.Timer.SECOND, this.makeFood, this);
 
-        //--------------- ADD PLAYER'S NAME AND STATUS TO THE DATABASE -----------------
+        //--------------- ADD PLAYER'S NAME AND STATUS AND SCALE TO THE DATABASE -----------------
         firebase.database().ref('players').child(this.player.key).set(this.obj);
 
         //=============== ADD THE TEXT ======================
@@ -124,6 +125,7 @@ class Game extends Phaser.State {
             snap.forEach(child => {
                 if(child.key !== this.player.key) {
                     this.players[child.key].position.set(child.val().x, child.val().y);
+                    this.players[child.key].currentScale = child.val().currentScale || 0.5
                     //Update text to follow players
                     this.playerTexts[child.key].x = child.val().x+this.name.width;
                     this.playerTexts[child.key].y = child.val().y;
@@ -145,7 +147,11 @@ class Game extends Phaser.State {
             if (collisionDetection == true){
                 //Make spaceship grows bigger
                 this.count++;
-                this.player.scale.setTo(0.5+0.01*this.count, 0.5+0.01*this.count);
+                this.player.currentScale =0.5+0.01*this.count
+                this.player.scale.setTo(this.player.currentScale, this.player.currentScale);
+                firebase.database().ref('players').child(this.player.key).update({
+                  currentScale: this.player.currentScale
+                })
                 this.foodArray[starKey].kill();
                 firebase.database().ref("stars").child(starKey).remove();
                 delete this.foodArray[starKey];
@@ -161,11 +167,12 @@ class Game extends Phaser.State {
           try{
             var otherSprite = this.players[otherPlayer];
             console.log("other spriteeeeee", otherSprite);
+
               var boundsC = this.player.getBounds();
               var boundsD = otherSprite.getBounds();
               var eatOtherPeople = Phaser.Rectangle.intersects(boundsC, boundsD);
               if (eatOtherPeople == true){
-                firebase.database().ref('players').child(otherPlayer).update({status:"dead"});
+                firebase.database().ref('players').child(otherPlayer).set(null);
               }
           }
 
