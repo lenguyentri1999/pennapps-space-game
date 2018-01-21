@@ -1,4 +1,4 @@
-class Menu extends Phaser.State {
+class Gameover extends Phaser.State {
 
   constructor() {
     super();
@@ -32,4 +32,4 @@ class Menu extends Phaser.State {
 
 }
 
-export default Menu;
+export default Gameover;

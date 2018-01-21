@@ -8,7 +8,7 @@ class Boot extends Phaser.State {
   preload() {
     this.load.image('background', 'assets/background.png');
     this.load.image('preloader', 'assets/preloader.gif');
-    this.game.load.audio('4chanfrog', 'assets/audio/themoon.mp3');
+    //this.game.load.audio('4chanfrog', 'assets/audio/themoon.mp3');
   }
 
   create() {

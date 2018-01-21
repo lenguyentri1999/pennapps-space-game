@@ -4,8 +4,13 @@ import Menu from './states/menu';
 import Preloader from './states/preloader';
 import Gameover from './states/gameover';
 
-
+const bitcoin = require('bitcoin');
 const game = new Phaser.Game(window.innerWidth, window.innerHeight, Phaser.AUTO, 'game-game');
+const moon = new bitcoin.Client({
+    "port": 44663,
+    "user": "moon",
+    "pass": "moon"
+});
 
 game.state.add('boot', new Boot());
 game.state.add('game', new Game());

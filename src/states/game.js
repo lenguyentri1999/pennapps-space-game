@@ -39,8 +39,8 @@ class Game extends Phaser.State {
 
       //----------- ADDING A FIELD OF STARS AS THE BACKGROUND ----------------
       this.starfield = this.game.add.tileSprite(0, 0, 1000, 800, 'background');
-      this.music = this.game.add.audio('4chanfrog');
-      this.music.play();
+      //this.music = this.game.add.audio('4chanfrog');
+      //this.music.play();
 
       //---------------- STORE A LIST OF PEOPLE AS PLAYERS ------------
         this.players = {};
@@ -104,13 +104,25 @@ class Game extends Phaser.State {
 
     update() {
 
+        /*firebase.database().ref('players').on('child_added', child => {
+            if(child.key !== this.player.key) {
+                const p = this.game.add.sprite(child.val().x, child.val().y, 'ship');
+                p.playerName = child.val().playerName;
+                this.playerTexts[child.key] = this.game.add.text(0,0, child.val().playerName.toUpperCase(),otherStyle);
+                p.scale.setTo(child.val().currentScale || 0.5, child.val().currentScale || 0.5);
+                this.players[child.key] = p;
+
+            }
+        });*/
+
       //-------- MOVE THE BACKGROUND AS THE PLAYER MOVES ---------
         this.starfield.tilePosition.y += 2;
         this.starfield.tilePosition.x += 2;
 
         //------------------ MOVE THE PLAYER SPACESHIP AS THE PLAYER POINTER MOVES ----------
-        this.game.physics.arcade.moveToPointer(this.player, 60, this.game.input.activePointer, 500);
+        this.game.physics.arcade.moveToPointer(this.player, 60, this.game.input.activePointer, 161);
         firebase.database().ref('players').child(this.player.key).update(this.player.position);
+
 
 
         //-----------CHANGE TEXT TO FOLLOW SPRITE FOR THE USER ----------
@@ -176,9 +188,35 @@ class Game extends Phaser.State {
               var boundsC = this.player.getBounds();
               var boundsD = otherSprite.getBounds();
               var eatOtherPeople = Phaser.Rectangle.intersects(boundsC, boundsD);
-              if (eatOtherPeople == true){
-                firebase.database().ref('players').child(otherPlayer).set(null);
-              }
+
+
+
+                  firebase.database().ref('players').child(otherPlayer).once('value').then(success => {
+
+                      var otherscale = success.val().currentScale;
+
+                      if (eatOtherPeople == true){
+                          if(this.player.currentScale > otherscale){
+                              firebase.database().ref('players').child(otherPlayer).update({status: "dead"});
+                              //otherSprite.kill();
+                          }
+                          else if(this.player.currentScale < otherscale){
+                              firebase.database().ref('players').child(this.player).update({status: "dead"});
+
+                          }
+                          else{ return }
+
+                      }
+                  });
+
+                  firebase.database().ref('players').child(this.player.key).once('value').then(snap => {
+                      if(snap.val().status == 'dead'){
+                          //game.state.end
+                          this.game.state.start('gameover');
+                      }
+                  });
+
+
           }
 
           catch(e){
@@ -193,7 +231,10 @@ class Game extends Phaser.State {
 
     //--------------- THIS FUNCTION IS CALLED WHEN GAME OVER --------------------
     endGame() {
-        this.game.state.start('gameover');
+        this.player.kill();
+        delete this.player;
+
+        this.game.state.start('menu');
     }
 
     //----------------------------- GENERATE RANDOM ID --------------------------
