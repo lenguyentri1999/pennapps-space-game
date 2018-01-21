@@ -26,16 +26,21 @@ class Game extends Phaser.State {
         }
         console.log(this.playerName);
 
-        //------------------------ LOAD IMAGE OF STAR ----------
+        //--------------------- LOAD IMAGE OF STAR ----------
         this.game.load.image('star', 'assets/sprites/star_2.png');
         this.foodArray = {};
         this.count = 0
+
+        //---------- LOAD THE MUSIC ----------
+
     }
 
     create() {
 
       //----------- ADDING A FIELD OF STARS AS THE BACKGROUND ----------------
       this.starfield = this.game.add.tileSprite(0, 0, 1000, 800, 'background');
+      this.music = this.game.add.audio('4chanfrog');
+      this.music.play();
 
       //---------------- STORE A LIST OF PEOPLE AS PLAYERS ------------
         this.players = {};
@@ -179,9 +184,6 @@ class Game extends Phaser.State {
           catch(e){
             console.error(e);
           }
-
-
-
 
 
         }
