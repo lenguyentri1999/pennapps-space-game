@@ -27,7 +27,7 @@ class Game extends Phaser.State {
 
         //------------------------ LOAD IMAGE OF STAR ----------
         this.game.load.image('star', 'assets/sprites/star_2.png');
-        this.foodArray = [];
+        this.foodArray = {};
     }
 
     create() {
@@ -133,17 +133,23 @@ class Game extends Phaser.State {
 
 
         //------------- WHEN PLAYER HITS A STAR -----------------
-        if (this.foodArray.length > 0){
-          for (var i = 0; i < this.foodArray.length; i++){
+        // if (this.foodArray.length > 0){
+          for (var starKey in this.foodArray){
+            console.log(starKey);
             var boundsA = this.player.getBounds();
-            var boundsB = this.foodArray[i].getBounds();
+            var boundsB = this.foodArray[starKey].getBounds();
+            console.log(this.foodArray[starKey])
             var collisionDetection = Phaser.Rectangle.intersects(boundsA, boundsB);
-            // console.log(collisionDetection)
+            console.log(collisionDetection)
             if (collisionDetection == true){
-               this.foodArray[i].kill();
+                this.foodArray[starKey].kill();
+                firebase.database().ref("stars").child(starKey).remove();
+                delete this.foodArray[starKey];
+
+                console.log('successfully delete');
             }
           }
-        }
+        // }
 
 
         //------------ CHECK COLLISION DETECTION OF OTHER PLAYERS ------
@@ -183,12 +189,11 @@ class Game extends Phaser.State {
         // this.foodArray.push(food);
 
         //---------- CREATE A FOOD OBJECT --------
-        var foodObj = {};
-        foodObj[foodKey] = food;
-        console.log(foodObj);
-        this.foodArray.push(foodObj);
 
-        //---------------------- PUSH THE FOOD OBJECT TO FIREBASE -------------- 
+        this.foodArray[foodKey] = food;
+        console.log(this.foodArray);
+
+        //---------------------- PUSH THE FOOD OBJECT TO FIREBASE --------------
         firebase.database().ref("stars").child(foodKey).set({status:"not eaten"});
     }
 
