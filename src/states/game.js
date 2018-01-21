@@ -82,6 +82,11 @@ class Game extends Phaser.State {
         //--------------- ADD PLAYER'S NAME AND STATUS TO THE DATABASE -----------------
         firebase.database().ref('players').child(this.player.key).set(this.obj);
 
+        this.player.currentScale = 0.5
+        firebase.database().ref('players').child(this.player.key).set({
+          currentScale: this.player.currentScale
+        })
+
         //=============== ADD THE TEXT ======================
         var style = {
           font: "20px Arial",
@@ -146,7 +151,7 @@ class Game extends Phaser.State {
             if (collisionDetection == true){
                 //Make spaceship grows bigger
                 this.count++;
-                this.player.currentScale = 0.05+0.01*this.count;
+                this.player.currentScale = 0.5+0.02*this.count;
                 this.player.scale.setTo(this.player.currentScale, this.player.currentScale);
                 firebase.database().ref('players').child(this.player.key).update({
                   currentScale: this.player.currentScale
