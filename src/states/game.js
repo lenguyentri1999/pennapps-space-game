@@ -20,7 +20,8 @@ class Game extends Phaser.State {
         this.game.load.image('ship', 'assets/sprites/spaceship.png');
         this.playerName = localStorage.getItem("playerName");
         this.obj ={
-          playerName: this.playerName
+          playerName: this.playerName,
+          status: "alive"
         }
         console.log(this.playerName);
 
@@ -77,7 +78,7 @@ class Game extends Phaser.State {
 
         this.game.time.events.loop(Phaser.Timer.SECOND, this.makeFood, this);
 
-        //--------------- ADD PLAYER'S NAME TO THE DATABASE -----------------
+        //--------------- ADD PLAYER'S NAME AND STATUS TO THE DATABASE -----------------
         firebase.database().ref('players').child(this.player.key).set(this.obj);
 
         //=============== ADD THE TEXT ======================
@@ -151,7 +152,9 @@ class Game extends Phaser.State {
           var boundsC = this.player.getBounds();
           var boundsD = otherSprite.getBounds();
           var eatOtherPeople = Phaser.Rectangle.intersects(boundsC, boundsD);
-          console.log(eatOtherPeople);
+          if (eatOtherPeople == true){
+            firebase.database().ref('players').child(otherPlayer).update({status:"dead"}); 
+          }
         }
 
     }
